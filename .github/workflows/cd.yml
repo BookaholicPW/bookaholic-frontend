@@ -1,0 +1,43 @@
+name: Deploy project
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request: # For testing only
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          image: giangh14cqt/bookaholic-frontend
+          push: true
+          tags: giangh14cqt/bookaholic-frontend:latest
+      -
+        name: Trigger deployment
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo docker pull giangh14cqt/bookaholic-frontend:latest
+            sudo docker stop bookaholic-frontend
+            sudo docker rm bookaholic-frontend
+            sudo docker run -d --name bookaholic-frontend -p 3000:3000 giangh14cqt/bookaholic-frontend:latest
