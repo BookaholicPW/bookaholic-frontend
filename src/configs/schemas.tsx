@@ -80,6 +80,7 @@ export type UserBase = {
     favoriteBooks?: Book[];
     favoriteAuthors?: Author[];
     favoriteGenres?: BookGenre[];
+    accessToken?: string;
 }
 
 export type User = UserBase & {
