@@ -20,7 +20,7 @@ export const appConfig: {
 export type ApiRequestBodyBase = any;
 
 export type ApiResponseBodyBase = {
-    status: 'success' | 'error';
+    success: boolean;
     message: string;
     data: any;
 }
@@ -90,6 +90,5 @@ export type User = UserBase & {
 }
 
 export type UserToken = {
-    accessToken: string;
-    refreshToken: string;
+    token: string;
 }

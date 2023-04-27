@@ -36,9 +36,7 @@ export namespace AccountLogin {
         password: string;
     }
     export type ResponseBody = ApiResponseBodyBase & {
-        data?: UserBase & {
-            token: UserToken;
-        }
+        data?: UserToken
     }
 }
 

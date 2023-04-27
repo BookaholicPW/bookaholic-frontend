@@ -1,14 +1,16 @@
+import { appConfig } from "@/configs/schemas";
 import { useState } from "react";
 import { useSettings } from "../hooks/useSettings";
 
 export default function useFetch<T>() {
-  const [loading, setLoading] = useState(true);
+  const config = appConfig;
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<T | null>(null);
   const { settings } = useSettings();
 
   const request = async (
-    method: "GET",
+    method: "GET" | "POST" | "PUT" | "DELETE",
     pathname: string,
     headers?: Record<string, string>,
     data?: Record<string, string>,
@@ -32,7 +34,13 @@ export default function useFetch<T>() {
     }
     setLoading(true);
     try {
-      const res = await fetch(pathname, options);
+      let url = new URL(config.apiRoot);
+      if (pathname.startsWith("http")) {
+        url = new URL(pathname);
+      } else {
+        url.pathname = pathname;
+      }
+      const res = await fetch(url, options);
       const json = await res.json();
       if (res.ok) {
         setData(json);

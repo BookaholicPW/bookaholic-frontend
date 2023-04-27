@@ -1,6 +1,8 @@
 import { useSettings } from "@/@core/hooks/useSettings";
 import useFetch from "@/@core/utils/useFetch";
+import { AccountLogin } from "@/configs/endpoints";
 import themeConfig from "@/configs/themeConfig";
+import EmptyLayout from "@/layouts/EmptyLayout";
 import {
   Box,
   Button,
@@ -18,19 +20,20 @@ import {
   Link,
 } from "@mui/material";
 import { EyeOffOutline, EyeOutline } from "mdi-material-ui";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { ChangeEvent, useEffect, useState, MouseEvent } from "react";
+import { ChangeEvent, useEffect, useState, MouseEvent, ReactNode } from "react";
 
 interface State {
-  username: string;
+  email: string;
   password: string;
   showPassword: boolean;
 }
 
 const AccountLoginPage = () => {
   const [values, setValues] = useState<State>({
-    username: "",
+    email: "",
     password: "",
     showPassword: false,
   });
@@ -62,21 +65,22 @@ const AccountLoginPage = () => {
     }
   };
 
-  const { request, loading } = useFetch();
+  const { request, data, loading } = useFetch<AccountLogin.ResponseBody>();
   const handleLogin = async (e: MouseEvent<HTMLButtonElement>) => {
-    // e.preventDefault()
-    // const data: AccountLoginEndpoint.Request = {
-    //   username: values.username,
-    //   password: values.password
-    // }
-    // const res = await fetchData(AccountLoginEndpoint.method, AccountLoginEndpoint.path, {}, data)
-    // setSnackbar({ open: true, message: res?.message })
-    // if (res && res.success) {
-    //   if (res.data) {
-    //     saveSettings({ ...settings, user: res.data })
-    //     router.push('/')
-    //   }
-    // }
+    e.preventDefault();
+    const requestData: AccountLogin.RequestBody = {
+      email: values.email,
+      password: values.password,
+    };
+    await request(AccountLogin.method, AccountLogin.path, {}, requestData);
+    const res = data;
+    data?.message && setSnackbar({ open: true, message: res?.message || "" });
+    if (res && res.success) {
+      if (res.data) {
+        saveSettings({ ...settings, user: res.data });
+        router.push("/");
+      }
+    }
   };
 
   //   useEffect(() => {
@@ -97,6 +101,9 @@ const AccountLoginPage = () => {
       justifyContent="center"
       style={{ minHeight: "100vh" }}
     >
+      <Head>
+        <title>Login - {themeConfig.appName}</title>
+      </Head>
       <Grid item xs={8} md={6} lg={4}>
         <Box className="content-center">
           <Card sx={{ zIndex: 1 }}>
@@ -137,16 +144,17 @@ const AccountLoginPage = () => {
                 onSubmit={(e) => e.preventDefault()}
               >
                 <TextField
-                  onChange={handleChange("username")}
+                  onChange={handleChange("email")}
                   autoFocus
                   fullWidth
-                  id="username"
-                  label="Username"
+                  id="email"
+                  label="Email"
                   sx={{ marginBottom: 4 }}
                   onKeyDown={handleKeyDown}
                   inputProps={{
                     minLength: 5,
                   }}
+                  type="email"
                 />
                 <FormControl fullWidth>
                   <InputLabel htmlFor="auth-login-password">
@@ -177,7 +185,7 @@ const AccountLoginPage = () => {
                     }
                   />
                 </FormControl>
-                { /* Forgot Password */}
+                {/* Forgot Password */}
                 <FormControl>
                   <Link
                     href="/account/forgot-password"
@@ -204,6 +212,7 @@ const AccountLoginPage = () => {
                   variant="contained"
                   sx={{ marginBottom: 7 }}
                   onClick={(e) => handleLogin(e)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Login
                 </Button>
@@ -242,5 +251,9 @@ const AccountLoginPage = () => {
     </Grid>
   );
 };
+
+AccountLoginPage.getLayout = (page: ReactNode) => (
+  <EmptyLayout>{page}</EmptyLayout>
+);
 
 export default AccountLoginPage;
