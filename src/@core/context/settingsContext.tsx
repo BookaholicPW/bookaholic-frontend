@@ -27,7 +27,7 @@ const initialSettings: Settings = {
   loaded: false,
   themeColor: 'primary',
   mode: themeConfig.mode,
-  user: undefined
+  user: undefined,
 }
 
 // ** Create Context

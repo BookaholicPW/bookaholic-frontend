@@ -1,5 +1,5 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { Children } from "react";
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { Children } from 'react'
 
 class CustomDocument extends Document {
   render() {
@@ -20,12 +20,12 @@ class CustomDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
 
 CustomDocument.getInitialProps = async (ctx) => {
-  const originalRenderPage = ctx.renderPage;
+  const originalRenderPage = ctx.renderPage
 
   ctx.renderPage = () =>
     originalRenderPage({
@@ -35,14 +35,14 @@ CustomDocument.getInitialProps = async (ctx) => {
             {...props} // @ts-ignore
           />
         ),
-    });
+    })
 
-  const initialProps = await Document.getInitialProps(ctx);
+  const initialProps = await Document.getInitialProps(ctx)
 
   return {
     ...initialProps,
     styles: [...Children.toArray(initialProps.styles)],
-  };
-};
+  }
+}
 
-export default CustomDocument;
+export default CustomDocument

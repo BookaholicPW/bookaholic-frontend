@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "npx cypress run",
-    "test:open": "npx cypress open"
+    "test:open": "npx cypress open",
+    "format": "prettier-eslint --write \"{,!(node_modules|cypress)/**/}*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -31,6 +32,11 @@
   },
   "devDependencies": {
     "@types/nprogress": "^0.2.0",
-    "cypress": "^12.11.0"
+    "cypress": "^12.11.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "prettier": "^2.8.8",
+    "prettier-eslint-cli": "^7.1.0"
   }
 }

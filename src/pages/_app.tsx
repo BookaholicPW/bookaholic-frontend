@@ -30,10 +30,10 @@ const App = (props: ExtendedAppProps) => {
   const { Component, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
+  const getLayout =
+    Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
 
   return getLayout(<Component {...pageProps} />)
-  
 }
 
 export default App

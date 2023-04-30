@@ -1,8 +1,8 @@
-import { useSettings } from "@/@core/hooks/useSettings";
-import useFetch from "@/@core/utils/useFetch";
-import { AccountGet, AccountLogin } from "@/configs/endpoints";
-import themeConfig from "@/configs/themeConfig";
-import EmptyLayout from "@/layouts/EmptyLayout";
+import { useSettings } from '@/@core/hooks/useSettings'
+import useFetch from '@/@core/utils/useFetch'
+import { AccountGet, AccountLogin } from '@/configs/endpoints'
+import themeConfig from '@/configs/themeConfig'
+import EmptyLayout from '@/layouts/EmptyLayout'
 import {
   Box,
   Button,
@@ -17,93 +17,93 @@ import {
   TextField,
   Typography,
   Grid,
-} from "@mui/material";
-import { EyeOffOutline, EyeOutline } from "mdi-material-ui";
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { ChangeEvent, useEffect, useState, MouseEvent, ReactNode } from "react";
+} from '@mui/material'
+import { EyeOffOutline, EyeOutline } from 'mdi-material-ui'
+import Head from 'next/head'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { ChangeEvent, useEffect, useState, MouseEvent, ReactNode } from 'react'
 
 interface State {
-  email: string;
-  password: string;
-  showPassword: boolean;
+  email: string
+  password: string
+  showPassword: boolean
 }
 
 const AccountLoginPage = () => {
   const [values, setValues] = useState<State>({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
     showPassword: false,
-  });
+  })
   const [snackbar, setSnackbar] = useState({
     open: false,
-    message: "",
-  });
-  const { settings, saveSettings } = useSettings();
+    message: '',
+  })
+  const { settings, saveSettings } = useSettings()
 
   // ** Hook
-  const router = useRouter();
+  const router = useRouter()
 
   const handleChange =
     (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: event.target.value });
-    };
+      setValues({ ...values, [prop]: event.target.value })
+    }
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
+    setValues({ ...values, showPassword: !values.showPassword })
+  }
 
   const handleMouseDownPassword = (event: any) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const handleKeyDown = (event: any) => {
-    if (event.key === "Enter") {
-      handleLogin(event);
+    if (event.key === 'Enter') {
+      handleLogin(event)
     }
-  };
+  }
 
-  const { request, loading } = useFetch<AccountLogin.ResponseBody>();
+  const { request, loading } = useFetch<AccountLogin.ResponseBody>()
 
   const fetchUserData = async () => {
-    const res = await request(AccountGet.method, AccountGet.path);
+    const res = await request(AccountGet.method, AccountGet.path)
     if (res && res.success) {
-      saveSettings({ ...settings, user: { ...settings.user, ...res.data } });
-      router.push("/");
+      saveSettings({ ...settings, user: { ...settings.user, ...res.data } })
+      router.push('/')
     }
-  };
+  }
 
   const handleLogin = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     const requestData: AccountLogin.RequestBody = {
       email: values.email,
       password: values.password,
-    };
+    }
     const res = await request(
       AccountLogin.method,
       AccountLogin.path,
       {},
       requestData
-    );
-    res?.message && setSnackbar({ open: true, message: res?.message || "" });
+    )
+    res?.message && setSnackbar({ open: true, message: res?.message || '' })
     if (res && res.success) {
       if (res.data) {
-        saveSettings({ ...settings, user: res.data });
+        saveSettings({ ...settings, user: res.data })
         setTimeout(() => {
-          fetchUserData();
-        }, 3000);
+          fetchUserData()
+        }, 3000)
       }
     }
-  };
+  }
 
   return (
     <Grid
       container
       alignContent="center"
       justifyContent="center"
-      style={{ minHeight: "100vh" }}
+      style={{ minHeight: '100vh' }}
     >
       <Head>
         <title>Login - {themeConfig.appName}</title>
@@ -119,9 +119,9 @@ const AccountLoginPage = () => {
               <Box
                 sx={{
                   mb: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Image
@@ -148,7 +148,7 @@ const AccountLoginPage = () => {
                 onSubmit={(e) => e.preventDefault()}
               >
                 <TextField
-                  onChange={handleChange("email")}
+                  onChange={handleChange('email')}
                   autoFocus
                   fullWidth
                   id="email"
@@ -168,8 +168,8 @@ const AccountLoginPage = () => {
                     label="Password"
                     value={values.password}
                     id="auth-login-password"
-                    onChange={handleChange("password")}
-                    type={values.showPassword ? "text" : "password"}
+                    onChange={handleChange('password')}
+                    type={values.showPassword ? 'text' : 'password'}
                     onKeyDown={handleKeyDown}
                     endAdornment={
                       <InputAdornment position="end">
@@ -194,7 +194,7 @@ const AccountLoginPage = () => {
                   <Link href="/account/forgot-password">
                     <Typography
                       variant="subtitle2"
-                      sx={{ mt: 2, display: "block", textAlign: "right" }}
+                      sx={{ mt: 2, display: 'block', textAlign: 'right' }}
                     >
                       Forgot password?
                     </Typography>
@@ -204,10 +204,10 @@ const AccountLoginPage = () => {
                 <Box
                   sx={{
                     mb: 4,
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
                   }}
                 ></Box>
                 <Button
@@ -224,8 +224,8 @@ const AccountLoginPage = () => {
                 <Snackbar
                   open={snackbar.open}
                   anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "center",
+                    vertical: 'bottom',
+                    horizontal: 'center',
                   }}
                   autoHideDuration={3000}
                   onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -236,10 +236,10 @@ const AccountLoginPage = () => {
               <Box
                 sx={{
                   mb: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexWrap: "wrap",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
                 }}
               >
                 <Typography variant="subtitle1" color="text.secondary">
@@ -257,11 +257,11 @@ const AccountLoginPage = () => {
         </Box>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
 AccountLoginPage.getLayout = (page: ReactNode) => (
   <EmptyLayout>{page}</EmptyLayout>
-);
+)
 
-export default AccountLoginPage;
+export default AccountLoginPage
