@@ -41,7 +41,7 @@ const AccountLoginPage = () => {
     open: false,
     message: '',
   })
-  const { settings, saveSettings } = useSettings()
+  const { settings, saveSettings, reloadSettings } = useSettings()
 
   // ** Hook
   const router = useRouter()
@@ -70,7 +70,8 @@ const AccountLoginPage = () => {
   const fetchUserData = async () => {
     const res = await request(AccountGet.method, AccountGet.path)
     if (res && res.success) {
-      saveSettings({ ...settings, user: { ...settings.user, ...res.data } })
+      const updatedSettings = reloadSettings(true);
+      saveSettings({ ...settings, user: { ...settings.user, ...res.data, token: updatedSettings?.user?.token } })
       router.push('/')
     }
   }
