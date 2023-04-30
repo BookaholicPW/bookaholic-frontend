@@ -1,34 +1,47 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
-import { Settings, SettingsContext, SettingsContextValue } from '@/@core/context/settingsContext'
-import { init } from 'next/dist/compiled/@vercel/og/satori';
+import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  Settings,
+  SettingsContextValue,
+} from "@/@core/context/settingsContext";
 
 export const useSettings = (): SettingsContextValue => {
   let initialSettings: Settings = {
     loaded: false,
-    themeColor: 'primary',
-    mode: 'light',
-    user: undefined
-  }
+    themeColor: "primary",
+    mode: "light",
+    user: undefined,
+  };
   // Read settings from local storage
   //
-  const [ settings, updateSettings ] = useState<Settings>({ ...initialSettings });
-  const saveSettings = useCallback((updatedSettings: Settings) => {
-    localStorage.setItem('settings', JSON.stringify({ ...updatedSettings, loaded: true }))
-    updateSettings(updatedSettings)
-  }, [updateSettings]);
-  if (typeof window === 'undefined') {
-    return { settings: initialSettings, saveSettings: () => null }
+  const [settings, updateSettings] = useState<Settings>({ ...initialSettings });
+  const saveSettings = useCallback(
+    (updatedSettings: Settings) => {
+      localStorage.setItem(
+        "settings",
+        JSON.stringify({ ...updatedSettings, loaded: true })
+      );
+      updateSettings(updatedSettings);
+    },
+    [updateSettings]
+  );
+  if (typeof window === "undefined") {
+    return { settings: initialSettings, saveSettings: () => null, reloadSettings: () => null };
   }
-  const localSettings = localStorage.getItem('settings');
-  if (localSettings && settings.loaded === false) {
-    initialSettings = JSON.parse(localSettings);
-    updateSettings(initialSettings);
-  } else if (settings.loaded === false) {
-    initialSettings.loaded = true;
-    updateSettings(initialSettings);
-  }
-  
-  
+  const reloadSettings = (force: boolean = false) => {
+    const localSettings = localStorage.getItem("settings");
+    if (localSettings && (settings.loaded === false || force)) {
+      initialSettings = JSON.parse(localSettings);
+      updateSettings(initialSettings);
+      return initialSettings;
+    } else if (settings.loaded === false) {
+      initialSettings.loaded = true;
+      updateSettings(initialSettings);
+      return initialSettings;
+    }
+    return null;
+  };
+
+  reloadSettings(false);
 
   // const { settings, saveSettingsContext } = useContext(SettingsContext)
   // useCallback(() => {
@@ -46,5 +59,5 @@ export const useSettings = (): SettingsContextValue => {
   //   }
   // }, [saveSettings, settings])
 
-  return { settings, saveSettings }
-}
+  return { settings, saveSettings, reloadSettings };
+};

@@ -25,7 +25,7 @@ const EmptyLayout = ({ children }: Props) => {
   const [refreshed, setRefreshed] = useState(false);
 
   useEffect(() => {
-    if (settings.user && settings.user.accessToken && !refreshed) {
+    if (settings.user && settings.user.token && !refreshed) {
       setRefreshed(true);
     //   fetchData(AccountInfoEndpoint.method, AccountInfoEndpoint.path).then(
     //     (res) => {
@@ -44,12 +44,11 @@ const EmptyLayout = ({ children }: Props) => {
   }, [refreshed, settings, saveSettings, request]);
 
   useEffect(() => {
-    console.log("settings", settings);
     if (settings && settings.loaded && !settings.user) {
-        console.log("Login");
+        console.debug("Unauthenticated");
     //   router.push("/account/login", undefined, { shallow: true });
     } else {
-        console.log("Home");
+        console.debug("Authenticated");
         router.push("/", undefined, { shallow: true });
     }
   }, [settings]);

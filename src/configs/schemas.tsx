@@ -14,7 +14,7 @@ export const appConfig: {
     siteUrl: 'https://bookaholic.pl',
     siteDescription: 'Bookaholic - connect all book lovers',
     siteKeywords: 'bookaholic, book, books, book lovers, book lovers community, bookaholic community, bookaholic.pl, bookaholic.pl community',
-    apiRoot: 'https://api.bookaholic.pl',
+    apiRoot: 'http://api.bookaholic.pl',
 }
 
 export type ApiRequestBodyBase = any;
@@ -80,7 +80,7 @@ export type UserBase = {
     favoriteBooks?: Book[];
     favoriteAuthors?: Author[];
     favoriteGenres?: BookGenre[];
-    accessToken?: string;
+    token?: string;
 }
 
 export type User = UserBase & {
