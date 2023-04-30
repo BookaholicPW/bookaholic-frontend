@@ -64,7 +64,6 @@ const AccountResetPasswordPage = () => {
     res?.message && setSnackbar({ open: true, message: res?.message || '' })
     if (res && res.success) {
       if (res.data) {
-        saveSettings({ ...settings, user: res.data })
         setTimeout(() => {
           router.push('/account/login')
         }, 3000)
