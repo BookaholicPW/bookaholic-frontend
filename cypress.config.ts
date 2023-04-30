@@ -1,4 +1,4 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress'
 
 export default defineConfig({
   projectId: 'vw16wb',
@@ -7,4 +7,4 @@ export default defineConfig({
       // implement node event listeners here
     },
   },
-});
+})

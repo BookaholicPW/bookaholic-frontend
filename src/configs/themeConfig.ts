@@ -4,7 +4,13 @@ import { PaletteMode } from '@mui/material'
 // ** Types
 // import { ContentWidth } from 'src/@core/layouts/types'
 
-export type ThemeColor = 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success'
+export type ThemeColor =
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'success'
 
 type ThemeConfig = {
   mode: PaletteMode
@@ -32,7 +38,7 @@ const themeConfig: ThemeConfig = {
 
   // ** Other Configs
   responsiveFontSizes: true /* true | false */,
-  disableRipple: false /* true | false */
+  disableRipple: false /* true | false */,
 }
 
 export default themeConfig
