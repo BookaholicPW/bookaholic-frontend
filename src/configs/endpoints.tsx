@@ -36,9 +36,7 @@ export namespace AccountLogin {
         password: string;
     }
     export type ResponseBody = ApiResponseBodyBase & {
-        data?: UserBase & {
-            token: UserToken;
-        }
+        data?: UserToken
     }
 }
 
@@ -89,6 +87,40 @@ export namespace AccountLogout {
     export type ResponseBody = ApiResponseBodyBase & {
         data?: undefined
     }
+}
+
+export namespace AccountResetPassword {
+    /**
+     * @description
+     * This endpoint is used to reset user's password.
+     * It requires the user to provide the email address.
+     * Backend will send an email to the email, with a link to confirm reset password.
+     * If user click the link, generate a new password and send it to the email.
+     * The link will be valid for 1 hour.
+     * Without authentication.
+     */
+    export const path = '/account/reset-password';
+    export const method = 'POST';
+    export type RequestBody = {
+        email: string;
+    }
+    export type ResponseBody = ApiResponseBodyBase;
+}
+
+export namespace AccountChangePassword {
+    /**
+     * @description
+     * This endpoint is used to change user's password.
+     * It requires the user to be authenticated.
+     * It requires the user to provide the current password.
+     */
+    export const path = '/account/change-password';
+    export const method = 'POST';
+    export type RequestBody = {
+        currentPassword: string;
+        newPassword: string;
+    }
+    export type ResponseBody = ApiResponseBodyBase;
 }
 
 export namespace ListBooks {
