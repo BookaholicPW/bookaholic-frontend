@@ -15,7 +15,7 @@ export const appConfig: {
   siteDescription: 'Bookaholic - connect all book lovers',
   siteKeywords:
     'bookaholic, book, books, book lovers, book lovers community, bookaholic community, bookaholic.pl, bookaholic.pl community',
-  apiRoot: 'http://api.bookaholic.pl',
+  apiRoot: 'https://api.bookaholic.pl',
 }
 
 export type ApiRequestBodyBase = any
