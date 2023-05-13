@@ -12,6 +12,7 @@ import { Button, Grid, Typography } from '@mui/material'
 import { useSettings } from '@/@core/hooks/useSettings'
 import useFetch from '@/@core/utils/useFetch'
 import { AccountGet } from '@/configs/endpoints'
+import VerticalLayout from './VerticalLayout'
 
 interface Props {
   children: ReactNode
@@ -52,9 +53,8 @@ const UserLayout = ({ children }: Props) => {
     if (
       settings &&
       settings.loaded &&
-      (!settings.user || !settings.user.token)
+      (!settings.user || !settings.user.token) &&
     ) {
-      console.log('Login')
       setRedirecting(true)
       saveSettings({ ...settings, user: undefined })
       router.push('/account/login', undefined, { shallow: true })
@@ -67,29 +67,13 @@ const UserLayout = ({ children }: Props) => {
       settings.user &&
       refreshed
     ) {
-      console.log('Authenticated')
       setAuthenticated(true)
     }
   }, [settings, refreshed])
-  // return <Grid>{children}</Grid>;
   return authenticated ? (
-    <Grid>
-      <Grid>
-        <Typography variant="button">
-          Logged in as {settings.user?.email}
-        </Typography>
-        <Button
-          onClick={() => {
-            setAuthenticated(false)
-            saveSettings({ ...settings, user: undefined })
-            router.push('/account/login', undefined, { shallow: true })
-          }}
-        >
-          Logout
-        </Button>
-      </Grid>
+    <VerticalLayout settings={settings} saveSettings={saveSettings}>
       {children}
-    </Grid>
+    </VerticalLayout>
   ) : (
     <Grid></Grid>
   )
