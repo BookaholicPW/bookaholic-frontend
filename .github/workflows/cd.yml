@@ -39,4 +39,4 @@ jobs:
             sudo docker pull giangh14cqt/bookaholic-frontend:latest
             sudo docker stop bookaholic-frontend
             sudo docker rm bookaholic-frontend
-            sudo docker run -d --name bookaholic-frontend -p 3000:3000 giangh14cqt/bookaholic-frontend:latest
+            sudo docker run -d --name bookaholic-frontend -p 3001:3000 giangh14cqt/bookaholic-frontend:latest
