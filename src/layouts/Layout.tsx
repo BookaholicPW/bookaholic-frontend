@@ -53,7 +53,7 @@ const UserLayout = ({ children }: Props) => {
     if (
       settings &&
       settings.loaded &&
-      (!settings.user || !settings.user.token) &&
+      (!settings.user || !settings.user.token)
     ) {
       setRedirecting(true)
       saveSettings({ ...settings, user: undefined })

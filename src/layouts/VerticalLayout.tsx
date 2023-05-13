@@ -159,7 +159,10 @@ export default function MiniDrawer(props: {
 
   const [selectedIndex, setSelectedIndex] = React.useState<string | null>(null)
 
-  const handleListItemClick = (event, index) => {
+  const handleListItemClick = (
+    _event: any,
+    index: string
+  ) => {
     setSelectedIndex(index)
   }
 
