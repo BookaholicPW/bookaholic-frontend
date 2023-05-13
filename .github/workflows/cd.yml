@@ -26,6 +26,7 @@ jobs:
         with:
           image: giangh14cqt/bookaholic-frontend
           push: true
+          platforms: linux/arm64/v8
           tags: giangh14cqt/bookaholic-frontend:latest
       -
         name: Trigger deployment
@@ -33,7 +34,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          password: ${{ secrets.PASSWORD }}
           script: |
             sudo docker pull giangh14cqt/bookaholic-frontend:latest
             sudo docker stop bookaholic-frontend
