@@ -92,3 +92,27 @@ export type User = UserBase & {
 export type UserToken = {
   token: string
 }
+
+export type UserMatching = {
+  id: string // uuid v4
+  users: (UserBase & {
+    answer?: string
+  })[],
+  chatId?: string
+}
+
+export type ChatMessage = {
+  id: string // uuid v4
+  time: number // timestamp
+  sender: UserBase
+  content: string
+  imgUrl?: string
+}
+
+export type Chat = {
+  id: string // uuid v4
+  sender: UserBase
+  lastMessage?: ChatMessage
+  seen?: boolean
+}
+
