@@ -3,7 +3,10 @@ import {
   Book,
   BookCharacter,
   BookGenre,
+  Chat,
+  ChatMessage,
   UserBase,
+  UserMatching,
   UserToken,
 } from './schemas'
 
@@ -250,5 +253,92 @@ export namespace GetBookAuthor {
   export type RequestBody = undefined
   export type ResponseBody = ApiResponseBodyBase & {
     data?: string
+  }
+}
+
+// --------- Matching APIs ---------
+export namespace GetSuggestedMatching {
+  /**
+   * @description
+   * This endpoint is used to get a suggested profile for the current user.
+   * It will return a user that has the most matching with the current user.
+   * If there is no matching user, it will return a random user.
+   */
+  export const path = '/matching/suggested-profile'
+  export const method = 'GET'
+  export type RequestBody = undefined
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: UserMatching
+  }
+}
+
+export namespace PostSuggestedProfileAnswer {
+  /**
+   * @description
+   * This endpoint is used to post an answer for the suggested profile.
+   * The answer can be either like or dislike.
+   * If the answer is like, waiting for the other user to like back.
+   * If the answer is dislike, the other user will not be suggested again.
+   * If the other user likes back, they will be matched, and the chat will be created.
+   */
+  export const path = '/matching/suggested-profile/answer'
+  export const method = 'POST'
+  export type RequestBody = {
+    id: string // the id of the suggested matching
+    answer: 'like' | 'dislike'
+  }
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: {
+      matched: boolean // true if the other user likes back and they are matched
+    }
+  }
+}
+
+// --------- Chat APIs ---------
+export namespace GetChatList {
+  /**
+   * @description
+   * This endpoint is used to get a list of chats that the current user is in.
+   * It will return a list of chats, with the last message of each chat.
+   * The list is sorted by the last message's created date.
+   */
+  export const path = '/chats'
+  export const method = 'GET'
+  export type RequestBody = undefined
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: Chat[]
+  }
+}
+
+export namespace GetChat {
+  /**
+   * @description
+   * This endpoint is used to get a chat by its id. 
+   * It will return a chat with all messages.
+   * The messages are sorted by the created date.
+   * The chat will be marked as read.
+   */
+  export const path = '/chats/:id'
+  export const method = 'GET'
+  export type RequestBody = undefined
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: ChatMessage[]
+  }
+}
+
+export namespace PostChatMessage {
+  /**
+   * @description
+   * This endpoint is used to post a message to a chat.
+   * It will return the posted message.
+   */
+  export const path = '/chats/:id/messages'
+  export const method = 'POST'
+  export type RequestBody = {
+    content: string, // if the message type is img, this will be base64 string
+    type: 'text' | 'image'
+  }
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: ChatMessage
   }
 }
