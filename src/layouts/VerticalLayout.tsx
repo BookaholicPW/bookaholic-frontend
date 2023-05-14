@@ -243,7 +243,7 @@ export default function MiniDrawer(props: {
           <ListItem>
             <ListItemAvatar>
               <Avatar alt={settings.user?.username} src={settings.user?.avatar}>
-                {settings.user?.username[0]}
+                {settings.user?.username ? settings.user?.username[0] : null}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
