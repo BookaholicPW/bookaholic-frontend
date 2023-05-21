@@ -25,7 +25,7 @@ import Grid from '@mui/material/Grid'
 import CustomAvatar from './components/Avatar'
 import Avatar from '@mui/material/Avatar'
 import ProfileDialog from './components/ProfileDialog'
-import { ListItemAvatar, ListItemSecondaryAction } from '@mui/material'
+import { ListItemAvatar, Snackbar } from '@mui/material'
 
 const drawerWidth = 240
 
@@ -159,12 +159,14 @@ export default function MiniDrawer(props: {
 
   const [selectedIndex, setSelectedIndex] = React.useState<string | null>(null)
 
-  const handleListItemClick = (
-    _event: any,
-    index: string
-  ) => {
+  const handleListItemClick = (_event: any, index: string) => {
     setSelectedIndex(index)
   }
+
+  const [snackbar, setSnackbar] = React.useState<{
+    open: boolean
+    message: string
+  }>({ open: false, message: '' })
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -269,9 +271,20 @@ export default function MiniDrawer(props: {
             user={settings.user}
             open={profileDialogOpen}
             setOpen={setProfileDialogOpen}
+            setSnackbar={setSnackbar}
           />
         )}
       </Box>
+      <Snackbar
+        open={snackbar.open}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        autoHideDuration={6000}
+        message={snackbar.message}
+        onClose={() => setSnackbar({ open: false, message: '' })}
+      />
     </Box>
   )
 }

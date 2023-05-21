@@ -13,7 +13,7 @@ export default function useFetch<T>() {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     pathname: string,
     headers?: Record<string, string>,
-    requestBody?: Record<string, string>,
+    requestBody?: Record<string, any>,
     options?: RequestInit
   ): Promise<T> => {
     let settings = reloadSettings(true)

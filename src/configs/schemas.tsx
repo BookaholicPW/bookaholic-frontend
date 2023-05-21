@@ -74,12 +74,14 @@ export type BookCharacter = {
 export type UserBase = {
   id: string // uuid v4
   username: string
+  name: string
   email: string
   avatar?: string
   bio?: string
   favoriteBooks?: Book[]
   favoriteAuthors?: Author[]
   favoriteGenres?: BookGenre[]
+  favoriteCharacters?: BookCharacter[]
   token?: string
 }
 
