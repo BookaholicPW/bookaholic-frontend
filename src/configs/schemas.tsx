@@ -97,10 +97,10 @@ export type UserToken = {
 
 export type UserMatching = {
   id: string // uuid v4
-  users: (UserBase & {
-    answer?: string
-  })[],
-  chatId?: string
+  firstUser: UserBase
+  secondUser: UserBase
+  firstUserLiked: boolean
+  secondUserLiked: boolean
 }
 
 export type ChatMessage = {

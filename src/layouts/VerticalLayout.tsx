@@ -9,25 +9,20 @@ import CssBaseline from '@mui/material/CssBaseline'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import DeleteIcon from '@mui/icons-material/Delete'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest'
 import { Settings } from '@/@core/context/settingsContext'
 import Grid from '@mui/material/Grid'
-import CustomAvatar from './components/Avatar'
 import Avatar from '@mui/material/Avatar'
 import ProfileDialog from './components/ProfileDialog'
 import { ListItemAvatar, Snackbar } from '@mui/material'
+import WelcomeDialog from './components/WelcomeDialog'
+import MatchingDialog from './components/MatchingDialog'
 
-const drawerWidth = 240
+const drawerWidth = 340
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -142,6 +137,23 @@ export default function MiniDrawer(props: {
   const theme = useTheme()
   const open = true
   const [profileDialogOpen, setProfileDialogOpen] = React.useState(false)
+  const [welcomeDialogOpen, setWelcomeDialogOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    if (settings && settings.user && settings.user.id) {
+      if (
+        !settings.user.username ||
+        !settings.user.favoriteBooks ||
+        settings.user.favoriteBooks.length === 0 ||
+        !settings.user.favoriteAuthors ||
+        settings.user.favoriteAuthors.length === 0 ||
+        !settings.user.favoriteGenres ||
+        settings.user.favoriteGenres.length === 0
+      ) {
+        setWelcomeDialogOpen(true)
+      }
+    }
+  }, [settings])
   const [lastInbox, setLastInbox] = React.useState<
     | {
         id: string
@@ -167,6 +179,8 @@ export default function MiniDrawer(props: {
     open: boolean
     message: string
   }>({ open: false, message: '' })
+
+  const [matchingDialogOpen, setMatchingDialogOpen] = React.useState(false)
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -197,7 +211,36 @@ export default function MiniDrawer(props: {
             // },
           }}
         >
-          <Box>Matching new friends</Box>
+          <Box
+            sx={{
+              margin: '20px',
+            }}
+          >
+            <Grid container>
+              <Grid item xs={10}>
+                <Typography variant="subtitle1">
+                  Matching new friends
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    whiteSpace: 'normal',
+                  }}
+                >
+                  Start finding friends with similar interests
+                </Typography>
+              </Grid>
+              <Grid item xs={2} display={'flex'} alignItems={'center'}>
+                <IconButton
+                  onClick={() => {
+                    setMatchingDialogOpen(true)
+                  }}
+                >
+                  <PersonAddIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
 
           <Divider />
           {lastInbox ? (
@@ -285,6 +328,22 @@ export default function MiniDrawer(props: {
         message={snackbar.message}
         onClose={() => setSnackbar({ open: false, message: '' })}
       />
+      {settings && settings.user && settings.user.id && (
+        <WelcomeDialog
+          open={welcomeDialogOpen}
+          setOpen={setWelcomeDialogOpen}
+          user={settings.user}
+          setSnackbar={setSnackbar}
+        ></WelcomeDialog>
+      )}
+      {settings.user && settings.user.id && (
+        <MatchingDialog
+          user={settings.user}
+          open={matchingDialogOpen}
+          setOpen={setMatchingDialogOpen}
+          setSnackbar={setSnackbar}
+        ></MatchingDialog>
+      )}
     </Box>
   )
 }
