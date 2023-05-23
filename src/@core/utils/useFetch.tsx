@@ -44,16 +44,20 @@ export default function useFetch<T>() {
         url.pathname = pathname
       }
       const res = await fetch(url, options)
-      if (res.headers.get('content-type')?.startsWith('application/json')) {
-        if (res.headers.get('content-type')?.startsWith('application/json')) {
-          const json = await res.json()
-          setData(json)
-          return json
-        }
+      if (res.ok && res.headers.get('content-type')?.startsWith('application/json')) {
+        const json = await res.json()
+        setData(json)
+        return json
       } else if (res.ok) {
         setData(res.text() as T)
         return res.text() as T
-      } else if (res.status === 401) {
+      } else if (res.headers.get('content-type')?.startsWith('application/json')) {
+        const json = await res.json()
+        const error = new Error(json.message)
+        setError(error)
+        throw error
+      }
+      else if (res.status === 401) {
         settings = reloadSettings(true)
         if (settings && settings.user && settings.user.token) {
           options.headers['authorization'] = `Bearer ${settings.user.token}`
@@ -67,7 +71,7 @@ export default function useFetch<T>() {
         throw new Error('Not Found')
       }
       throw new Error('Unknown error')
-    } catch (err) {
+    } catch (err: Error | any) {
       if (err instanceof Error) {
         setError(err)
       } else {
@@ -75,12 +79,12 @@ export default function useFetch<T>() {
       }
       const res = {
         success: false,
-        message: `Error: ${error?.message || 'Unknown error'}`,
+        message: `Error: ${err?.message || 'Unknown error'}`,
+        data: err
       } as T
       setData(res)
 
-      console.log('Error', err)
-      return res
+      throw res
     } finally {
       setLoading(false)
     }
