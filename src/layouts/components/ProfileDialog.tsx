@@ -13,7 +13,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControl,
   Grid,
@@ -82,7 +81,6 @@ export default function ProfileDialog(props: {
   }, [userInfo.favoriteBooks])
 
   useEffect(() => {
-    console.log(userInfo.favoriteGenres)
     if (selectedGenres.length !== userInfo.favoriteGenres?.length) {
       setSelectedGenres(userInfo.favoriteGenres || [])
     }

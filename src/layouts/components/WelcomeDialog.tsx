@@ -85,7 +85,6 @@ export default function WelcomeDialog(props: {
   }, [userInfo.favoriteBooks])
 
   useEffect(() => {
-    console.log(userInfo.favoriteGenres)
     if (selectedGenres.length !== userInfo.favoriteGenres?.length) {
       setSelectedGenres(userInfo.favoriteGenres || [])
     }

@@ -41,23 +41,25 @@ export default function useFetch<T>() {
       if (pathname.startsWith('http')) {
         url = new URL(pathname)
       } else {
-        url.pathname = pathname
+        url = new URL(pathname, config.apiRoot)
       }
       const res = await fetch(url, options)
-      if (res.ok && res.headers.get('content-type')?.startsWith('application/json')) {
+      if (
+        res.ok &&
+        res.headers.get('content-type')?.startsWith('application/json')
+      ) {
         const json = await res.json()
         setData(json)
         return json
       } else if (res.ok) {
         setData(res.text() as T)
         return res.text() as T
-      } else if (res.headers.get('content-type')?.startsWith('application/json')) {
+      } else if (
+        res.headers.get('content-type')?.startsWith('application/json')
+      ) {
         const json = await res.json()
-        const error = new Error(json.message)
-        setError(error)
-        throw error
-      }
-      else if (res.status === 401) {
+        return json as T
+      } else if (res.status === 401) {
         settings = reloadSettings(true)
         if (settings && settings.user && settings.user.token) {
           options.headers['authorization'] = `Bearer ${settings.user.token}`
@@ -80,11 +82,10 @@ export default function useFetch<T>() {
       const res = {
         success: false,
         message: `Error: ${err?.message || 'Unknown error'}`,
-        data: err
+        data: err,
       } as T
       setData(res)
-
-      throw res
+      return res
     } finally {
       setLoading(false)
     }
