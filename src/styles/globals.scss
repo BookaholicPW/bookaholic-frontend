@@ -1,0 +1,138 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+:root {
+  --foreground-rgb: 238, 238, 238;
+  --background-start-rgb: 255, 89, 123;
+  --background-end-rgb: 247, 116, 143;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+} */
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100vw 100vh;
+}
+
+
+.chat-panel {
+  position: relative;
+
+  .chat-box {
+    padding: 15px;
+    width: 100%;
+    height: -webkit-fill-available;
+    overflow-y: scroll;
+  }
+
+  table {
+    tr {
+      width: 50px;
+    }
+
+    width: 100%;
+  }
+
+  td {
+    border: none;
+  }
+
+  .avatar {
+    margin-right: 0.5rem;
+    width: fit-content;
+    padding: 0;
+
+    img {
+      width: 50px;
+      height: 50px;
+      // border-radius: 100%;
+    }
+  }
+
+  .message {
+    max-width: 60%;
+
+    .content {
+      display: flex;
+      width: fit-content;
+      padding: 10px;
+      white-space: pre-wrap;
+      display: block;
+      max-width: 80%;
+      margin: 0px 10px;
+
+      a {
+        color: white;
+      }
+
+      pre {
+        background: #f4f4f4;
+        border: 1.5px solid #ddd;
+        border-left: 3px solid #3498db;
+        color: #666;
+        page-break-inside: avoid;
+        font-family: monospace;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 1.6em;
+        max-width: 100%;
+        overflow: auto;
+        padding: 1em 1.5em;
+        display: block;
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  .user-message {
+    width: auto;
+    height: auto;
+    //
+
+    .message {
+      float: right;
+
+      .content {
+        border: solid 1px #000000;
+        border-radius: 20px 0px 20px 20px;
+        background-color: #0c3361;
+        color: white;
+        min-width: 100% !important;
+      }
+    }
+  }
+
+  .bot-message {
+    .message {
+      .content {
+        border: solid 1px #000000;
+        border-radius: 0px 20px 20px 20px;
+        background-color: aliceblue;
+        color: black;
+      }
+    }
+  }
+}
+
+.empty-chat {
+  display: block;
+  font-size: 22px;
+  color: darkgray;
+  text-align: center;
+  margin-top: 20vh;
+}

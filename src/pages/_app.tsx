@@ -1,6 +1,6 @@
 import themeConfig from '@/configs/themeConfig'
 import UserLayout from '@/layouts/Layout'
-import '@/styles/globals.css'
+import '@/styles/globals.scss'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { Router } from 'next/router'

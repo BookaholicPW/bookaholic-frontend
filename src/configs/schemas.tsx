@@ -114,7 +114,7 @@ export type ChatMessage = {
 export type Chat = {
   id: string // uuid v4
   sender: UserBase
-  lastMessage?: ChatMessage
+  lastChatMessage?: ChatMessage
   seen?: boolean
 }
 

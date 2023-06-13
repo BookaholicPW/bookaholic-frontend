@@ -21,6 +21,11 @@ import ProfileDialog from './components/ProfileDialog'
 import { ListItemAvatar, Snackbar } from '@mui/material'
 import WelcomeDialog from './components/WelcomeDialog'
 import MatchingDialog from './components/MatchingDialog'
+import useFetch from '@/@core/utils/useFetch'
+import { GetChatList } from '@/configs/endpoints'
+import { Chat } from '@/configs/schemas'
+import ChatBox from './components/ChatBox'
+import Head from 'next/head'
 
 const drawerWidth = 340
 
@@ -93,41 +98,6 @@ const Drawer = styled(MuiDrawer, {
   }),
 }))
 
-function generateExampleLastInbox() {
-  return [
-    {
-      id: '1',
-      username: 'John Doe',
-      lastMessage: {
-        id: '1',
-        content: 'Hello',
-        time: new Date().getTime() / 1000,
-      },
-      seen: false,
-    },
-    {
-      id: '2',
-      username: 'Jane Doe',
-      lastMessage: {
-        id: '2',
-        content: 'Hello',
-        time: new Date().getTime() / 1000,
-      },
-      seen: false,
-    },
-    {
-      id: '3',
-      username: 'John Smith',
-      lastMessage: {
-        id: '3',
-        content: 'How are you?',
-        time: new Date().getTime() / 1000,
-      },
-      seen: true,
-    },
-  ]
-}
-
 export default function MiniDrawer(props: {
   children: React.ReactNode
   settings: Settings
@@ -138,7 +108,8 @@ export default function MiniDrawer(props: {
   const open = true
   const [profileDialogOpen, setProfileDialogOpen] = React.useState(false)
   const [welcomeDialogOpen, setWelcomeDialogOpen] = React.useState(false)
-
+  const [selectedChat, setSelectedChat] = React.useState<Chat | null>(null)
+  const { request } = useFetch<GetChatList.ResponseBody>()
   React.useEffect(() => {
     if (settings && settings.user && settings.user.id) {
       if (
@@ -154,25 +125,19 @@ export default function MiniDrawer(props: {
       }
     }
   }, [settings])
-  const [lastInbox, setLastInbox] = React.useState<
-    | {
-        id: string
-        username: string
-        avatar?: string
-        lastMessage: { id: string; content: string; time: number }
-        seen: boolean
-      }[]
-    | null
-  >(generateExampleLastInbox())
+  const [lastInbox, setLastInbox] = React.useState<Chat[] | null>(null)
+  React.useEffect(() => {
+    getLastInbox().then((res) => {
+      setLastInbox(res)
+    })
+  }, [])
 
   const openProfileDialog = () => {
     setProfileDialogOpen(true)
   }
 
-  const [selectedIndex, setSelectedIndex] = React.useState<string | null>(null)
-
   const handleListItemClick = (_event: any, index: string) => {
-    setSelectedIndex(index)
+    setSelectedChat(lastInbox?.find((chat) => chat.id === index) ?? null)
   }
 
   const [snackbar, setSnackbar] = React.useState<{
@@ -180,15 +145,27 @@ export default function MiniDrawer(props: {
     message: string
   }>({ open: false, message: '' })
 
+  async function getLastInbox(): Promise<Chat[]> {
+    const res = await request(GetChatList.method, GetChatList.path)
+    if (res.success) {
+      return res.data
+    } else {
+      return []
+    }
+  }
+
   const [matchingDialogOpen, setMatchingDialogOpen] = React.useState(false)
 
   return (
     <Box sx={{ display: 'flex' }}>
+      <Head>
+        (!selectedChat ? (<title>Bookaholic</title>) : null)
+      </Head>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
+            {selectedChat?.sender?.name ?? 'Chat'}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -250,17 +227,18 @@ export default function MiniDrawer(props: {
               <List component="nav">
                 {lastInbox.map((item) => (
                   <ListItemButton
-                    selected={selectedIndex === item.id}
+                    selected={selectedChat?.id === item.id}
                     onClick={(event) => handleListItemClick(event, item.id)}
+                    key={item.id}
                   >
                     <ListItemAvatar>
-                      <Avatar alt={item.username} src={item.avatar}>
-                        {item.username[0]}
+                      <Avatar alt={item.sender.avatar} src={item.sender.avatar}>
+                        {item.sender.username[0]}
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={item.username}
-                      secondary={item.lastMessage.content}
+                      primary={item.sender.name || item.sender.username}
+                      secondary={(item.lastChatMessage?.sender?.id == settings.user?.id) ? "You: "+ (item.lastChatMessage?.content || '') : ''}
                     />
                   </ListItemButton>
                 ))}
@@ -285,7 +263,7 @@ export default function MiniDrawer(props: {
           }}
         >
           <Divider sx={{ marginBottom: '15px' }} />
-          <ListItem>
+          <ListItem key="profile-item">
             <ListItemAvatar>
               <Avatar alt={settings.user?.username} src={settings.user?.avatar}>
                 {settings.user?.username ? settings.user?.username[0] : null}
@@ -306,9 +284,11 @@ export default function MiniDrawer(props: {
           <Divider sx={{ marginTop: '5px' }} />
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, padding: '10px' }}>
         <DrawerHeader />
-        {children}
+        {selectedChat ? (
+          <ChatBox chat={selectedChat} setSnackbar={setSnackbar} settings={settings} />
+        ) : null}
         {settings.user && (
           <ProfileDialog
             user={settings.user}
