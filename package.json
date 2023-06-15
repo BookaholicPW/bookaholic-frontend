@@ -34,8 +34,8 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.22.5",
     "@types/nprogress": "^0.2.0",
-    "babel-eslint": "^10.1.0",
     "cypress": "^12.11.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
