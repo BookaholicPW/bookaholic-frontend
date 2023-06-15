@@ -6,16 +6,12 @@ import {
 import { User, UserMatching } from '@/configs/schemas'
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
   CardMedia,
   CircularProgress,
   Dialog,
-  DialogContent,
-  DialogTitle,
-  Grid,
   IconButton,
   Typography,
 } from '@mui/material'
@@ -90,19 +86,29 @@ export default function MatchingDialog(props: {
   return (
     <Dialog open={props.open} onClose={() => props.setOpen(false)}>
       {matching && opponent ? (
-        <Card sx={{ maxWidth: '350px' }}>
+        <Card sx={{ maxWidth: '500px' }}>
           <CardMedia
             component="img"
-            height={'350px'}
-            width={'350px'}
+            height={'500px'}
+            width={'500px'}
             image={opponent.avatar || '/images/default_profile.png'}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {opponent.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" gutterBottom>
               {opponent.bio}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Favourite books: &nbsp;
+              {opponent.favoriteBooks?.map((book) => book.title).join(', ')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Favourite authors: &nbsp;
+              {opponent.favoriteAuthors
+                ?.map((author) => author.name)
+                .join(', ')}
             </Typography>
           </CardContent>
           <CardActions>
