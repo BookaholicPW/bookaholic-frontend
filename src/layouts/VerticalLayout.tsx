@@ -236,7 +236,10 @@ export default function MiniDrawer(props: {
                       primary={item.sender.name || item.sender.username}
                       secondary={
                         item.lastChatMessage?.sender?.id == settings.user?.id
-                          ? 'You: ' + (item.lastChatMessage?.content || '')
+                          ? 'You: ' +
+                            (item.lastChatMessage?.type == 'image'
+                              ? 'Photo'
+                              : item.lastChatMessage?.content || '')
                           : ''
                       }
                     />

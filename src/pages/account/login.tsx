@@ -70,8 +70,15 @@ const AccountLoginPage = () => {
   const fetchUserData = async () => {
     const res = await request(AccountGet.method, AccountGet.path)
     if (res && res.success) {
-      const updatedSettings = reloadSettings(true);
-      saveSettings({ ...settings, user: { ...settings.user, ...res.data, token: updatedSettings?.user?.token } })
+      const updatedSettings = reloadSettings(true)
+      saveSettings({
+        ...settings,
+        user: {
+          ...settings.user,
+          ...res.data,
+          token: updatedSettings?.user?.token,
+        },
+      })
       router.push('/')
     }
   }

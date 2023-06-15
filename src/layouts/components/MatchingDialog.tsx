@@ -49,7 +49,7 @@ export default function MatchingDialog(props: {
         props.setSnackbar({
           open: true,
           message: error.message,
-        });
+        })
         props.setOpen(false)
       })
   }

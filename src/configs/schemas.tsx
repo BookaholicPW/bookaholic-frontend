@@ -108,7 +108,7 @@ export type ChatMessage = {
   time: number // timestamp
   sender: UserBase
   content: string
-  imgUrl?: string
+  type: 'image' | 'text'
 }
 
 export type Chat = {
@@ -117,4 +117,3 @@ export type Chat = {
   lastChatMessage?: ChatMessage
   seen?: boolean
 }
-

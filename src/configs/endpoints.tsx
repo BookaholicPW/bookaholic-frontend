@@ -134,12 +134,9 @@ export namespace AccountChangePassword {
 }
 
 export namespace AccountUpdateAvatar {
-
   export const path = '/account/avatar'
   export const method = 'POST'
-  export type RequestBody = {
-
-  }
+  export type RequestBody = {}
   export type ResponseBody = ApiResponseBodyBase & {
     data?: UserBase
   }
@@ -325,7 +322,7 @@ export namespace GetChatList {
 export namespace GetChat {
   /**
    * @description
-   * This endpoint is used to get a chat by its id. 
+   * This endpoint is used to get a chat by its id.
    * It will return a chat with all messages.
    * The messages are sorted by the created date.
    * The chat will be marked as read.
@@ -347,7 +344,7 @@ export namespace PostChatMessage {
   export const path = '/chats/:id/messages'
   export const method = 'POST'
   export type RequestBody = {
-    content: string, // if the message type is img, this will be base64 string
+    content: string // if the message type is img, this will be base64 string
     type: 'text' | 'image'
   }
   export type ResponseBody = ApiResponseBodyBase & {

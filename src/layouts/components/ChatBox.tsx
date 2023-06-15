@@ -1,22 +1,27 @@
 import {
   Avatar,
   Box,
+  Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   IconButton,
   Input,
   InputAdornment,
   InputLabel,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { createRef, useEffect, useState } from 'react'
 import SendIcon from '@mui/icons-material/Send'
 import { ApiResponseBodyBase, Chat, ChatMessage } from '@/configs/schemas'
 import Head from 'next/head'
 import { GetChat, PostChatMessage } from '@/configs/endpoints'
 import useFetch from '@/@core/utils/useFetch'
 import { useReducer } from 'react'
-import { get } from 'cypress/types/lodash'
 import { Settings } from '@/@core/context/settingsContext'
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto'
 
 export default function ChatBox(props: {
   chat: Chat
@@ -27,13 +32,17 @@ export default function ChatBox(props: {
 }) {
   const [lastMessage, setLastMessage] = useState<ChatMessage | undefined>()
   const [message, setMessage] = useState<string>('')
+  const [dialogPhotoSource, setDialogPhotoSource] = useState<
+    string | undefined
+  >()
   const { request } = useFetch<ApiResponseBodyBase>()
+  const messagesEnd = createRef<HTMLDivElement>()
 
   const getMessages = async () => {
     let url = GetChat.path.replace(':id', props.chat.id.toString())
     let checkLastMessage = props.chatMessages.find(
       (message) => message.id === lastMessage?.id
-    );
+    )
     if (lastMessage && checkLastMessage) {
       url += '?lastMessageId=' + lastMessage.id + '&isUntil=true'
     }
@@ -89,6 +98,37 @@ export default function ChatBox(props: {
       setMessage(content)
     }
   }
+
+  const sendPhoto = async () => {
+    let input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.onchange = async (e) => {
+      let file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) {
+        return
+      }
+      let formData = new FormData()
+      formData.append('file', file)
+      formData.append(
+        'message',
+        JSON.stringify({
+          content: '',
+          type: 'image',
+        })
+      )
+      let url = PostChatMessage.path.replace(':id', props.chat.id.toString())
+      let result = await request(PostChatMessage.method, url, {}, formData)
+      if (!result.success) {
+        props.setSnackbar({
+          open: true,
+          message: result.message,
+        })
+      }
+    }
+    input.click()
+  }
+
   useEffect(() => {
     setInterval(() => {
       dispatch({ type: 'fetch' })
@@ -97,9 +137,15 @@ export default function ChatBox(props: {
   }, [])
 
   useEffect(() => {
-    setLastMessage(undefined);
-    props.setChatMessages([]);
-  }, [props.chat.id]);
+    setLastMessage(undefined)
+    props.setChatMessages([])
+  }, [props.chat.id])
+
+  useEffect(() => {
+    if (messagesEnd.current) {
+      messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [props.chatMessages])
 
   return (
     <Box
@@ -138,7 +184,8 @@ export default function ChatBox(props: {
               message.sender.id === props.settings.user?.id
             if (
               (index === 0 ||
-                message.sender.id !== props.chatMessages[index - 1].sender.id) &&
+                message.sender.id !==
+                  props.chatMessages[index - 1].sender.id) &&
               (index === props.chatMessages.length - 1 ||
                 message.sender.id !== props.chatMessages[index + 1].sender.id)
             ) {
@@ -162,7 +209,22 @@ export default function ChatBox(props: {
                 ? '20px 5px 5px 20px'
                 : '5px 20px 20px 5px'
             }
-
+            let messageContent: any = message.content
+            if (message.type === 'image') {
+              messageContent = (
+                <img
+                  src={message.content}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '200px',
+                    borderRadius: borderRadius,
+                  }}
+                  onClick={() => {
+                    setDialogPhotoSource(message.content)
+                  }}
+                />
+              )
+            }
             if (message.sender.id === props.settings.user?.id) {
               return (
                 <tr className="user-message">
@@ -174,7 +236,7 @@ export default function ChatBox(props: {
                         borderRadius: borderRadius,
                       }}
                     >
-                      {message.content}
+                      {messageContent}
                     </div>
                   </td>
                 </tr>
@@ -203,7 +265,7 @@ export default function ChatBox(props: {
                           borderRadius: borderRadius,
                         }}
                       >
-                        {message.content}
+                        {messageContent}
                       </div>
                     )}
                   </td>
@@ -212,6 +274,7 @@ export default function ChatBox(props: {
             }
           })}
         </table>
+        <div style={{ float: 'left', clear: 'both' }} ref={messagesEnd}></div>
       </div>
       {false ? (
         <span className="empty-chat">
@@ -254,18 +317,61 @@ export default function ChatBox(props: {
             }}
             endAdornment={
               <InputAdornment position="end">
+                <IconButton aria-label="Send a photo">
+                  <InsertPhotoIcon onClick={sendPhoto} />
+                </IconButton>
                 <IconButton aria-label="Type your message">
-                  <SendIcon
-                    onClick={() => {
-                      sendMessage()
-                    }}
-                  />
+                  <SendIcon onClick={sendMessage} />
                 </IconButton>
               </InputAdornment>
             }
           />
         </FormControl>
       </Box>
+      <Dialog
+        open={dialogPhotoSource != undefined}
+        onClose={() => {
+          setDialogPhotoSource(undefined)
+        }}
+      >
+        <DialogTitle>Photo</DialogTitle>
+        <DialogContent>
+          <img
+            src={dialogPhotoSource}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '70vh',
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              if (dialogPhotoSource) {
+                fetch(dialogPhotoSource).then((response) => {
+                  response.blob().then((blob) => {
+                    let url = window.URL.createObjectURL(blob)
+                    let a = document.createElement('a')
+                    a.href = url
+                    a.download = 'image.jpg'
+                    a.click()
+                  })
+                })
+              }
+            }}
+          >
+            Download
+          </Button>
+          <Button
+            onClick={() => {
+              setDialogPhotoSource(undefined)
+            }}
+            autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

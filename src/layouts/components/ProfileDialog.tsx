@@ -119,7 +119,12 @@ export default function ProfileDialog(props: {
     console.log(file)
     const formData = new FormData()
     formData.append('file', file)
-    let result = await request(AccountUpdateAvatar.method, AccountUpdateAvatar.path, {}, formData);
+    let result = await request(
+      AccountUpdateAvatar.method,
+      AccountUpdateAvatar.path,
+      {},
+      formData
+    )
     if (result && result.success) {
       props.setOpen(false)
       reloadSettings(true)
