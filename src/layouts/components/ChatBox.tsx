@@ -22,33 +22,37 @@ export default function ChatBox(props: {
   chat: Chat
   setSnackbar: (value: { open: boolean; message: string }) => void
   settings: Settings
+  chatMessages: ChatMessage[]
+  setChatMessages: (value: ChatMessage[]) => void
 }) {
   const [lastMessage, setLastMessage] = useState<ChatMessage | undefined>()
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [message, setMessage] = useState<string>('')
   const { request } = useFetch<ApiResponseBodyBase>()
 
   const getMessages = async () => {
     let url = GetChat.path.replace(':id', props.chat.id.toString())
-    console.log(lastMessage)
-    if (lastMessage) {
-      url += '?lastMessageId=' + lastMessage.id
+    let checkLastMessage = props.chatMessages.find(
+      (message) => message.id === lastMessage?.id
+    );
+    if (lastMessage && checkLastMessage) {
+      url += '?lastMessageId=' + lastMessage.id + '&isUntil=true'
     }
-    console.log(url)
+
     let response = (await request(GetChat.method, url)) as GetChat.ResponseBody
     if (response.success) {
       let res = response as GetChat.ResponseBody
-      let messages = [...chatMessages, ...res.data]
+      if (res.data.length === 0) {
+        props.setChatMessages([])
+        return
+      }
+      let messages = [...props.chatMessages, ...res.data]
       messages = messages.filter(
         (message, index, self) =>
           index === self.findIndex((m) => m.id === message.id)
       )
       messages = messages.sort((a, b) => a.time - b.time)
-      console.log(messages)
-      setChatMessages(messages)
-      console.log('set last message', messages.length)
+      props.setChatMessages(messages)
       if (messages.length > 0) {
-        console.log('set last message')
         setLastMessage(messages[messages.length - 1])
       }
     }
@@ -69,16 +73,14 @@ export default function ChatBox(props: {
     console.log(message)
     let content = message.trim()
     setMessage('')
+    let formData = new FormData()
+    let formMessage = JSON.stringify({
+      content: content,
+      type: 'text',
+    })
+    formData.append('message', formMessage)
     let url = PostChatMessage.path.replace(':id', props.chat.id.toString())
-    let result = await request(
-      PostChatMessage.method,
-      url,
-      {},
-      {
-        content: content,
-        type: 'text',
-      }
-    )
+    let result = await request(PostChatMessage.method, url, {}, formData)
     if (!result.success) {
       props.setSnackbar({
         open: true,
@@ -91,7 +93,13 @@ export default function ChatBox(props: {
     setInterval(() => {
       dispatch({ type: 'fetch' })
     }, 1000)
+    console.log('set interval')
   }, [])
+
+  useEffect(() => {
+    setLastMessage(undefined);
+    props.setChatMessages([]);
+  }, [props.chat.id]);
 
   return (
     <Box
@@ -124,27 +132,27 @@ export default function ChatBox(props: {
               }}
             />
           </colgroup>
-          {chatMessages.map((message, index) => {
+          {props.chatMessages.map((message, index) => {
             let borderRadius = '0px'
             let currentUserSender =
               message.sender.id === props.settings.user?.id
             if (
               (index === 0 ||
-                message.sender.id !== chatMessages[index - 1].sender.id) &&
-              (index === chatMessages.length - 1 ||
-                message.sender.id !== chatMessages[index + 1].sender.id)
+                message.sender.id !== props.chatMessages[index - 1].sender.id) &&
+              (index === props.chatMessages.length - 1 ||
+                message.sender.id !== props.chatMessages[index + 1].sender.id)
             ) {
               borderRadius = '20px'
             } else if (
               index === 0 ||
-              message.sender.id !== chatMessages[index - 1].sender.id
+              message.sender.id !== props.chatMessages[index - 1].sender.id
             ) {
               borderRadius = currentUserSender
                 ? '20px 20px 5px 20px'
                 : '20px 20px 20px 5px'
             } else if (
-              index === chatMessages.length - 1 ||
-              message.sender.id !== chatMessages[index + 1].sender.id
+              index === props.chatMessages.length - 1 ||
+              message.sender.id !== props.chatMessages[index + 1].sender.id
             ) {
               borderRadius = currentUserSender
                 ? '20px 5px 20px 20px'

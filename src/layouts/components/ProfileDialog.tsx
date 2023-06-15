@@ -1,6 +1,7 @@
 import useFetch from '@/@core/utils/useFetch'
 import {
   AccountUpdate,
+  AccountUpdateAvatar,
   ListBookAuthor,
   ListBookGenres,
   ListBooks,
@@ -98,23 +99,37 @@ export default function ProfileDialog(props: {
       favoriteBooks: selectedBooks.map((book) => book.id),
       favoriteGenres: selectedGenres.map((genre) => genre.id),
       favoriteAuthors: selectedAuthors.map((author) => author.id),
-    }).then(
-      (res) => {
-        if (res && res.success) {
-          props.setOpen(false)
-          saveSettings({
-            ...settings,
-            user: { ...res.data, token: settings?.user?.token },
-          })
-          reloadSettings(true)
-          props.setSnackbar({
-            open: true,
-            message: res.message,
-          })
-        }
+    }).then((res) => {
+      if (res && res.success) {
+        props.setOpen(false)
+        saveSettings({
+          ...settings,
+          user: { ...res.data, token: settings?.user?.token },
+        })
+        reloadSettings(true)
+        props.setSnackbar({
+          open: true,
+          message: res.message,
+        })
       }
-    )
+    })
   }
+
+  const setUserAvatar = async (file: File) => {
+    console.log(file)
+    const formData = new FormData()
+    formData.append('file', file)
+    let result = await request(AccountUpdateAvatar.method, AccountUpdateAvatar.path, {}, formData);
+    if (result && result.success) {
+      props.setOpen(false)
+      reloadSettings(true)
+    }
+    props.setSnackbar({
+      open: true,
+      message: result.message,
+    })
+  }
+
   return (
     <Dialog
       open={props.open}
@@ -133,6 +148,18 @@ export default function ProfileDialog(props: {
                 width: 100,
                 height: 100,
                 margin: 'auto',
+              }}
+              onClick={() => {
+                let input = document.createElement('input')
+                input.type = 'file'
+                input.accept = 'image/*'
+                input.onchange = (e) => {
+                  let file = (e.target as HTMLInputElement).files?.[0]
+                  if (file) {
+                    setUserAvatar(file)
+                  }
+                }
+                input.click()
               }}
             />
           </Grid>

@@ -133,6 +133,18 @@ export namespace AccountChangePassword {
   export type ResponseBody = ApiResponseBodyBase
 }
 
+export namespace AccountUpdateAvatar {
+
+  export const path = '/account/avatar'
+  export const method = 'POST'
+  export type RequestBody = {
+
+  }
+  export type ResponseBody = ApiResponseBodyBase & {
+    data?: UserBase
+  }
+}
+
 export namespace ListBooks {
   /**
    * @description

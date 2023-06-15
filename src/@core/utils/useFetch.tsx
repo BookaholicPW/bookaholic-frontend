@@ -13,7 +13,7 @@ export default function useFetch<T>() {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     pathname: string,
     headers?: Record<string, string>,
-    requestBody?: Record<string, any>,
+    requestBody?: Record<string, any> | FormData,
     options?: RequestInit
   ): Promise<T> => {
     let settings = reloadSettings(true)
@@ -21,7 +21,11 @@ export default function useFetch<T>() {
     options.method = method
     options.headers = headers || {}
     if (!options.headers['content-type']) {
-      options.headers['content-type'] = 'application/json'
+      if (requestBody instanceof FormData) {
+        // options.headers['content-type'] = 'multipart/form-data'
+      } else {
+        options.headers['content-type'] = 'application/json'
+      }
     }
     if (
       !options.headers['authorization'] &&
@@ -32,7 +36,9 @@ export default function useFetch<T>() {
       options.headers['authorization'] = `Bearer ${settings.user.token}`
     }
 
-    if (requestBody) {
+    if (requestBody instanceof FormData) {
+      options.body = requestBody
+    } else {
       options.body = JSON.stringify(requestBody)
     }
     setLoading(true)

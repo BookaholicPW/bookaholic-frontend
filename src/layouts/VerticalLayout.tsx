@@ -23,7 +23,7 @@ import WelcomeDialog from './components/WelcomeDialog'
 import MatchingDialog from './components/MatchingDialog'
 import useFetch from '@/@core/utils/useFetch'
 import { GetChatList } from '@/configs/endpoints'
-import { Chat } from '@/configs/schemas'
+import { Chat, ChatMessage } from '@/configs/schemas'
 import ChatBox from './components/ChatBox'
 import Head from 'next/head'
 
@@ -108,6 +108,7 @@ export default function MiniDrawer(props: {
   const open = true
   const [profileDialogOpen, setProfileDialogOpen] = React.useState(false)
   const [welcomeDialogOpen, setWelcomeDialogOpen] = React.useState(false)
+  const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([])
   const [selectedChat, setSelectedChat] = React.useState<Chat | null>(null)
   const { request } = useFetch<GetChatList.ResponseBody>()
   React.useEffect(() => {
@@ -137,6 +138,7 @@ export default function MiniDrawer(props: {
   }
 
   const handleListItemClick = (_event: any, index: string) => {
+    setChatMessages([])
     setSelectedChat(lastInbox?.find((chat) => chat.id === index) ?? null)
   }
 
@@ -152,6 +154,11 @@ export default function MiniDrawer(props: {
     } else {
       return []
     }
+  }
+
+  const accountLogout = () => {
+    saveSettings({ ...settings, user: undefined })
+    setSnackbar({ open: true, message: 'Logout success' })
   }
 
   const [matchingDialogOpen, setMatchingDialogOpen] = React.useState(false)
@@ -175,17 +182,6 @@ export default function MiniDrawer(props: {
             height: 'calc(100% - 60px)',
             overflowY: 'auto',
             overflowX: 'hidden',
-            // '&::-webkit-scrollbar': {
-            //   width: '0.4em',
-            // },
-            // '&::-webkit-scrollbar-track': {
-            //   boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            //   webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            // },
-            // '&::-webkit-scrollbar-thumb': {
-            //   backgroundColor: 'rgba(0,0,0,.1)',
-            //   outline: '1px solid slategrey',
-            // },
           }}
         >
           <Box
@@ -238,7 +234,11 @@ export default function MiniDrawer(props: {
                     </ListItemAvatar>
                     <ListItemText
                       primary={item.sender.name || item.sender.username}
-                      secondary={(item.lastChatMessage?.sender?.id == settings.user?.id) ? "You: "+ (item.lastChatMessage?.content || '') : ''}
+                      secondary={
+                        item.lastChatMessage?.sender?.id == settings.user?.id
+                          ? 'You: ' + (item.lastChatMessage?.content || '')
+                          : ''
+                      }
                     />
                   </ListItemButton>
                 ))}
@@ -275,7 +275,19 @@ export default function MiniDrawer(props: {
                   {settings.user?.username || 'Usermame'}
                 </Typography>
               }
-              // secondary={item.lastMessage.content}
+              secondary={
+                <Typography
+                  variant="caption"
+                  noWrap
+                  component="div"
+                  sx={{
+                    cursor: 'pointer',
+                  }}
+                  onClick={accountLogout}
+                >
+                  Logout
+                </Typography>
+              }
             />
             <IconButton onClick={openProfileDialog}>
               <SettingsSuggestIcon />
@@ -287,7 +299,13 @@ export default function MiniDrawer(props: {
       <Box component="main" sx={{ flexGrow: 1, padding: '10px' }}>
         <DrawerHeader />
         {selectedChat ? (
-          <ChatBox chat={selectedChat} setSnackbar={setSnackbar} settings={settings} />
+          <ChatBox
+            chat={selectedChat}
+            setSnackbar={setSnackbar}
+            settings={settings}
+            chatMessages={chatMessages}
+            setChatMessages={setChatMessages}
+          />
         ) : null}
         {settings.user && (
           <ProfileDialog
