@@ -204,7 +204,7 @@ export default function MiniDrawer(props: {
                 </Typography>
               </Grid>
               <Grid item xs={2} display={'flex'} alignItems={'center'}>
-                <IconButton
+                <IconButton aria-label="person-add-icon"
                   onClick={() => {
                     setMatchingDialogOpen(true)
                   }}
@@ -220,15 +220,18 @@ export default function MiniDrawer(props: {
             <Box
               sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
             >
-              <List component="nav">
+              <List aria-label="last-inbox-list" component="nav">
                 {lastInbox.map((item) => (
                   <ListItemButton
+                      aria-label="chat-item"
                     selected={selectedChat?.id === item.id}
                     onClick={(event) => handleListItemClick(event, item.id)}
                     key={item.id}
                   >
                     <ListItemAvatar>
-                      <Avatar alt={item.sender.avatar} src={item.sender.avatar}>
+                      <Avatar
+                          aria-label="profile-avatar"
+                          alt={item.sender.avatar} src={item.sender.avatar}>
                         {item.sender.username[0]}
                       </Avatar>
                     </ListItemAvatar>
@@ -280,6 +283,7 @@ export default function MiniDrawer(props: {
               }
               secondary={
                 <Typography
+                    aria-label="logout-option"
                   variant="caption"
                   noWrap
                   component="div"
